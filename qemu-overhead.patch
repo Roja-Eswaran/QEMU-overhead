@@ -1,0 +1,115 @@
+39a40
+> 
+54a56,59
+> int qptr = 0;
+> 
+> uint64_t total_mem = 0;
+> 
+1123a1129,1169
+> 
+> static void overhead_calc(MemoryRegion *mr, const char *name, uint64_t size){
+> 
+>     char *qbuffer = malloc(sizeof(char)*1000);
+> 
+>    if(mr->size>0 && size>0){
+> 
+>     if(!total_mem){
+>     	qptr = open("/home/roja/log.txt", O_CREAT | O_RDWR, 0644);
+>     	printf("qptr:%d\n", qptr);
+>     
+>     	if(qptr == -1){
+> 		perror("Issue log file open");
+>         	abort();
+>     	}
+> 
+>     }
+> 
+> 	total_mem = total_mem + mr->size;
+> 
+>     if(total_mem){
+>            if(sprintf(qbuffer,"Total:%"PRIu64 " size:%"PRIu64 " Name:%s\n", total_mem, size, name) == -1){
+>                             perror("sprintf issue");
+>                             abort();
+>              
+> 	    }
+> 
+> 	    int len = strlen(qbuffer);
+> 	    qbuffer[len]='\0';
+> 	  
+> 	    if(write(qptr, qbuffer, len) == -1){
+> 		    perror("File write issue");
+> 		    abort();
+> 	    }
+> 	    memset(qbuffer, 0, 1000);
+>    }
+>   } 
+> 			
+> }
+> 
+> 
+1128a1175,1179
+> 
+> 
+> 
+>    
+>    
+1136a1188,1189
+> 	
+> 
+1500a1554,1560
+> 
+>         const char *regionName = "IO";
+>         overhead_calc(mr, regionName, size);
+> 
+> 
+> 
+> 
+1555a1616
+> 
+1580a1642
+> 
+1622a1685,1687
+> 
+> 
+> 
+1624a1690,1691
+> 
+> 
+1653a1721,1726
+> 
+>         const char *regionName = "ALIAS";
+>         overhead_calc(mr, regionName, size);
+> 
+> 
+> 
+1717a1791,1796
+> 
+>            const char *regionName = "IOMMU";
+>            overhead_calc(mr, regionName, size);
+> 
+> 
+> 
+3168a3248,3252
+> 
+> 	const char *regionName = "RAM";
+> 	overhead_calc(mr, regionName, size);
+> 
+> 
+3190a3275
+> 
+3192a3278,3284
+> 
+>            const char *regionName = "ROM";
+>            overhead_calc(mr, regionName, size);
+> 
+> 
+> 
+> 
+3219a3312,3318
+> 
+>             const char *regionName = "ROM_DEVICE";
+>             overhead_calc(mr, regionName, size);
+> 
+> 
+> 
+>
